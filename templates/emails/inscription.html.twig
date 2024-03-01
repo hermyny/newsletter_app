@@ -1,0 +1,14 @@
+
+<h1>Ravi de te revoir parmi nous!!</h1>
+
+<p>
+    Tu t'es inscrit à MyNewsletter avec l'adresse suivante: {{ user.email }}.
+</p>
+
+<p>
+    Clique sur ce lien <a href="{{ absolute_url(path('newsletters_confirm', {id: user.id, token: token})) }}">{{ absolute_url(path('newsletters_confirm', {id: user.id, token: token})) }}</a> pour valider ton inscription.
+    (La date de validité du lien est {{ expiration_date|date('F jS') }})
+</p>
+<p>   
+    Si ce lien a été envoyé par erreur, merci de ne pas y répondre.
+</p>

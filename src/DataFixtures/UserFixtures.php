@@ -12,6 +12,13 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface
 {
+
+    
+    /**
+     * @var Generator
+     */
+    private Generator $faker;
+    
     public function __construct()
     {
         $this->faker = Factory::create('fr_FR');

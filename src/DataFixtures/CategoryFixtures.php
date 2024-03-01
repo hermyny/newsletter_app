@@ -25,9 +25,9 @@ class CategoryFixtures extends Fixture
     {
         for ($categoryCount = 1; $categoryCount <= 5; $categoryCount++) {
             
-            
             $category = new Category();
             $category->setName($this->faker->sentence(1));
+          
 
             $this->addReference('category_' . $categoryCount, $category);
             
@@ -37,6 +37,6 @@ class CategoryFixtures extends Fixture
 
         $manager->flush();
     }
-
+   
    
 }

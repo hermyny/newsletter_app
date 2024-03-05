@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[UniqueEntity('email')]
 class User
 {
     #[ORM\Id]
@@ -18,6 +20,13 @@ class User
     private ?int $id = null;
 
     #[Assert\NotBlank]
+    #[Assert\Email]
+    #[Assert\Length(
+        min:5,
+        max: 50,
+        minMessage: 'Your first name must be at least {{ limit }} characters long',
+        maxMessage: 'Your first name cannot be longer than {{ limit }} characters',
+    )]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
@@ -33,7 +42,7 @@ class User
     #[ORM\Column]
     private ?bool $is_valid = false;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'subscriber')]
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'subscriber')]
     private Collection $categories;
 
    
@@ -121,7 +130,7 @@ class User
     {
         if (!$this->categories->contains($category)) {
             $this->categories->add($category);
-            $category->addSubscriber($this);
+            //$category->addSubscriber($this);
         }
 
         return $this;

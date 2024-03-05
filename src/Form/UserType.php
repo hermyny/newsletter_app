@@ -24,7 +24,8 @@ class UserType extends AbstractType
                 'class' => Category::class,
                 'choice_label' => 'name',
                 'multiple' => true,
-                'expanded' =>true
+                'expanded' =>true,
+                'by_reference' => false,
             ])
             ->add('is_rgpd', CheckboxType::class, [
                 'constraints' => [

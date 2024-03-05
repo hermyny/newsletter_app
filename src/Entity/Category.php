@@ -18,7 +18,7 @@ class Category
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'categories')]
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'categories')]
     private Collection $subscriber;
 
     #[ORM\OneToMany(targetEntity: Newsletter::class, mappedBy: 'category')]
@@ -59,6 +59,7 @@ class Category
     {
         if (!$this->subscriber->contains($subscriber)) {
             $this->subscriber->add($subscriber);
+            $subscriber->addCategory($this);
         }
 
         return $this;

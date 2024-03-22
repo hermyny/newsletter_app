@@ -5,10 +5,12 @@
     Tu t'es inscrit à MyNewsletter avec l'adresse suivante: {{ user.email }}.
 </p>
 
-
+{% if not user.isValid %}
 <p>Clique sur ce lien <a href="{{ absolute_url(path('newsletter_confirm', {id: user.id, token: token})) }}">{{ absolute_url(path('newsletter_confirm', {id: user.id, token: token})) }}</a></p> 
    (La date de validité du lien est {{ expiration_date|date('F jS') }})
 </p>
+{% else %}
+    <p>Ce lien de confirmation a déjà été utilisé.</p>
 <p>   
-    Si ce lien a été envoyé par erreur, merci de ne pas y répondre.
+    Si ce lien a été envoyé par erreur, merci de ne pas en tenir compte.
 </p>

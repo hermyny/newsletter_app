@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Entity\Newsletter;
 use App\Form\UserType;
 use App\Form\NewsletterType;
+use App\Message\SendNewsletterMessage;
 use App\Repository\NewsletterRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -89,6 +90,11 @@ class NewsletterController extends AbstractController
         if($user->getValidationToken() !=$token){
             throw $this->createNotFoundException('Oups... Un problème est survenu.');
         }
+
+        if ($user->isIsValid(true)) {
+            // Redirection si le compte est déjà activé
+            throw $this->createNotFoundException("Ce lien n'est plus actif.");
+        }
         $user->setIsValid(true);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -112,7 +118,7 @@ class NewsletterController extends AbstractController
 
             return $this->redirectToRoute('newsletter_list');
         }
-     return $this->render('newsletters/prepare.html.twig', [
+     return $this->render('newsletter/prepare.html.twig', [
         'form' => $form->createView()
         ]);
     }
@@ -120,12 +126,44 @@ class NewsletterController extends AbstractController
     #[Route("/list", name:"list")]
     public function list(NewsletterRepository $newsletter): Response
     {
-        return $this->render('newsletters/list.html.twig', [
+        return $this->render('newsletter/list.html.twig', [
             'newsletters' => $newsletter->findAll()
         ]);
     }
 
-    
+    #[Route("/send/{id}", name:"send")]
+    public function send(Newsletter $newsletter, MessageBusInterface $messageBus): Response
+   {
+        $subscribers = $newsletter->getCategory()->getSubscriber();
+        foreach($subscribers as $subscriber) {
+            if($subscriber->isIsValid()){
+                $messageBus->dispatch(new SendNewsletterMessage ($subscriber->getId(), $newsletter->getId()));
+            }
+        }
+
+        return $this->redirectToRoute('newsletter_list');
+   }
+
+
+   #[Route("/unsubscribe/{id}/{newsletter}/{token}", name:"unsubscribe")]
+   public function unsubscribe(User $subscriber, Newsletter $newsletter, $token): Response
+   {
+        if($subscriber->getValidationToken() != $token){
+            throw $this->createNotFoundException('Une erreur est survenue.');
+        }
+
+        if(count($subscriber->getCategories()) > 1){
+            $subscriber->removeCategory($newsletter->getCategory());
+            $this->entityManager->persist($subscriber);
+        }else{
+            $this->entityManager->remove($subscriber);
+        }
+        $this->entityManager->flush();
+
+        $this->addFlash('message', 'La newsletter a bien été supprimée!');
+        return $this->redirectToRoute('app_home');
+   }
+ 
 
 
 }

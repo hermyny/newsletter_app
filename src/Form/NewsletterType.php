@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\category;
+use App\Entity\Category;
 use App\Entity\Newsletter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -18,10 +18,12 @@ class NewsletterType extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
-            ->add('content', HiddenType::class)
+            ->add('content', TextType::class)
             ->add('category', EntityType::class, [
-                'class' => category::class,
-'choice_label' => 'id',
+                'class' => Category::class,
+                'choice_label' => 'name',
+               
+                
             ])
             ->add('enregistrer', SubmitType::class)
         ;

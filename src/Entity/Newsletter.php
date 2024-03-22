@@ -31,7 +31,7 @@ class Newsletter
     private ?bool $is_sent = false;
 
     #[ORM\ManyToOne(inversedBy: 'newsletters')]
-    private ?category $category = null;
+    private ?Category $category = null;
 
     public function __construct()
     {
@@ -102,4 +102,8 @@ class Newsletter
 
         return $this;
     }
+
+    public function __toString() {
+        return $this->id;
+        }
 }
